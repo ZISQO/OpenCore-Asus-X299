@@ -85,7 +85,7 @@ Alternatively you can also use the sample SSDT-RTC0-RANGE, which may be better s
   * Sets `Plugin-type=1` to `SB.SCK0.CP00` allowing for proper CPU power management
 * [SSDT-SBUS-MCHC](/ACPI-Compiled/SSDT-SBUS-MCHC.aml)
    * Creates SMBus device allowing AppleSMBus to load
-* [SSDT-RTC0-RANGE-v2002,v3105](/ACPI-Compiled/SSDT-RTC0-RANGE-v3006.aml)
+* [SSDT-RTC0-RANGE-v2002,v3006,v3105](/ACPI-Compiled/SSDT-RTC0-RANGE-v3006.aml)
   * BIOS v2002 and older should use [SSDT-RTC0-RANGE-v2002](/ACPI-Compiled/SSDT-RTC0-RANGE-v2002.aml)
   * Not a problem until the Catalina 10.15.6, but it's a necessary patch for Big Sur
 
