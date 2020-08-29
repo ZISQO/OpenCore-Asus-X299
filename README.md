@@ -1,4 +1,4 @@
-# OpenCore running on Asus X299-E Strix
+# OpenCore running on Asus X299-E Strix / TUF mk1
 
 ![](/images/aboutthismac.png)
  
@@ -9,6 +9,7 @@
  
  * BIOS cannot properly unlock the MSR E2 register
    * This will require AppleCpuPmCfgLock and AppleXcpmCfgLock enabled
+   * Using [UEFIpatch](https://github.com/LongSoft/UEFITool/releases/download/0.28.0/UEFIPatch_0.28.0_mac.zip) will fix MSR E2 issue
  * AWAC clock has been added
    * This will require [SSDT-RTC0-RANGE.dsl](https://github.com/acidanthera/OpenCorePkg/blob/master/Docs/AcpiSamples/SSDT-RTC0-RANGE.dsl)
  
@@ -84,14 +85,14 @@ Alternatively you can also use the sample SSDT-RTC0-RANGE, which may be better s
   * Sets `Plugin-type=1` to `SB.SCK0.CP00` allowing for proper CPU power management
 * [SSDT-SBUS-MCHC](/ACPI-Compiled/SSDT-SBUS-MCHC.aml)
    * Creates SMBus device allowing AppleSMBus to load
-* [SSDT-RTC0-RANGE-v3006](/ACPI-Compiled/SSDT-RTC0-RANGE-v3006.aml)
+* [SSDT-RTC0-RANGE-v2002,v3105](/ACPI-Compiled/SSDT-RTC0-RANGE-v3006.aml)
   * BIOS v2002 and older should use [SSDT-RTC0-RANGE-v2002](/ACPI-Compiled/SSDT-RTC0-RANGE-v2002.aml)
-  
+  * Not a problem until the Catalina 10.15.6, but it's a necessary patch for Big Sur
 
 #### Booter
 
 ##### Quirks
-
+v2002 and v3006
 | Quirk | Enabled | Comment |
 | :--- | :--- | :--- |
 | AvoidRuntimeDefrag | True | Needed to boot |
@@ -101,6 +102,16 @@ Alternatively you can also use the sample SSDT-RTC0-RANGE, which may be better s
 | RebuildAppleMemoryMap | True | Fix allocations due to memory map issues |
 | SyncRuntimePermissions | True | Needed for booting Windows and linux correctly |
 
+
+v3105
+| Quirk | Enabled | Comment |
+| :--- | :--- | :--- |
+| AvoidRuntimeDefrag | True | Needed to boot |
+| DevirtualiseMmio | True | Adds extra allocation areas |
+| EnableWriteUnprotected | True | Conflicts with RebuildAppleMemoryMap below |
+| ProvideCustomSlide | True | Ensures bad sectors aren't used for booting |
+| RebuildAppleMemoryMap | False | Fix allocations due to memory map issues |
+| SyncRuntimePermissions | True | Needed for booting Windows and linux correctly |
 
 #### DeviceProperties
 
@@ -113,7 +124,7 @@ layout-id | Data | 01000000
 #### Kernel
 
 ##### Quirks
-
+v2002,v3006,v3105 without UEFIpatch for MSR E2 unlock
 | Quirk | Enabled | Comment |
 | :--- | :--- | :--- |
 | AppleCpuPmCfgLock | True | Needed for BIOS v3006 |
@@ -122,6 +133,14 @@ layout-id | Data | 01000000
 | PanicNoKextDump | True | Helps with troubleshooting |
 | PowerTimeoutKernelPanic | True | Helps with audio related kernel panics |
 
+v2002,v3006,v3105 with UEFIpatch for MSR E2 unlock
+| Quirk | Enabled | Comment |
+| :--- | :--- | :--- |
+| AppleCpuPmCfgLock | False | Needed for BIOS v2002,v3006, v3105 |
+| AppleXcpmCfgLock | False | Needed for BIOS v2002,v3006, v3105 |
+| DisableIOMapper | True | Needed if you plan to use VT-D in Windows or Linux |
+| PanicNoKextDump | False | Helps with troubleshooting |
+| PowerTimeoutKernelPanic | False | Helps with audio related kernel panics |
 
 #### NVRAM
 
